@@ -55,11 +55,15 @@ class Arrivals(StopPoint):
 	def get_arrivals(self,modes=None,lines=None):
 		if modes == None:
 			modes = self.modes
+		if lines == None:
+			lines = self.lines
 		arrivals = []
 		response = requests.get(f"{api_url}/StopPoint/{self.id}/Arrivals")
 		response.raise_for_status()
 		for arrival in response.json():
 			#print(json.dumps(arrival,indent=4))
+			if arrival["lineId"] not in lines:
+				continue
 			if "destinationName" not in arrival:
 				continue
 			arrival_info = {
