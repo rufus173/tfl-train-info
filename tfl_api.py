@@ -1,10 +1,11 @@
 import requests
+import cached_requests_wrapper
 from datetime import datetime
 import json
 
 api_url = "https://api.tfl.gov.uk"
 
-class StopPoint:
+class StopPoint(cached_requests_wrapper.CachedRequests):
 	def __init__(self,mode=None,id=None,display_name=None):
 		if display_name != None:
 			self.id = self.get_id_from_display_name(display_name,mode=mode)[0]
@@ -29,29 +30,33 @@ class StopPoint:
 			raise Exception("No matches found")
 		return response["matches"][0]["id"], response["matches"][0]["name"]
 	def get_display_name_from_id(self,id):
-		response = requests.get(f"{api_url}/StopPoint/{id}")
-		response.raise_for_status()
+		#response = requests.get(f"{api_url}/StopPoint/{id}")
+		#response.raise_for_status()
+		response = self.cached_get_request(f"{api_url}/StopPoint/{id}")
 		response = response.json()
 		return response["commonName"]
 	def get_modes(self,id):
-		response = requests.get(f"{api_url}/StopPoint/{id}")
-		response.raise_for_status()
+		#response = requests.get(f"{api_url}/StopPoint/{id}")
+		#response.raise_for_status()
+		response = self.cached_get_request(f"{api_url}/StopPoint/{id}")
 		response = response.json()
 		modes = []
 		for mode in response["lineModeGroups"]:
 			modes.append(mode["modeName"])
 		return modes
 	def get_lines(self,id):
-		response = requests.get(f"{api_url}/StopPoint/{id}")
-		response.raise_for_status()
+		#response = requests.get(f"{api_url}/StopPoint/{id}")
+		#response.raise_for_status()
+		response = self.cached_get_request(f"{api_url}/StopPoint/{id}")
 		response = response.json()
 		lines = []
 		for line in response["lines"]:
 			lines.append(line["id"])
 		return lines
 	def get_common_name(self,id):
-		response = requests.get(f"{api_url}/StopPoint/{id}")
-		response.raise_for_status()
+		#response = requests.get(f"{api_url}/StopPoint/{id}")
+		#response.raise_for_status()
+		response = self.cached_get_request(f"{api_url}/StopPoint/{id}")
 		response = response.json()
 		return response["commonName"]
 class Arrivals(StopPoint):
