@@ -82,9 +82,12 @@ class Arrivals(StopPoint):
 				"time_to_station": arrival["timeToStation"],
 				"expected_arrival": datetime.fromisoformat(arrival["expectedArrival"][:-1]),
 				"platform_name": arrival["platformName"],
-				"destination_name": self.get_common_name(arrival["destinationNaptanId"]),
 				"destination_id": arrival["destinationNaptanId"],
 			}
+			if arrival["destinationNaptanId"] == "":
+				arrival_info["destination_name"] = arrival["destinationName"]
+			else:
+				arrival_info["destination_name"] = self.get_common_name(arrival["destinationNaptanId"]),
 			arrivals.append(arrival_info)
 		return arrivals
 	def __iter__(self):
