@@ -49,6 +49,11 @@ class StopPoint:
 		for line in response["lines"]:
 			lines.append(line["id"])
 		return lines
+	def get_common_name(self,id):
+		response = requests.get(f"{api_url}/StopPoint/{id}")
+		response.raise_for_status()
+		response = response.json()
+		return response["commonName"]
 class Arrivals(StopPoint):
 	def __init__(self,display_name=None,id=None,modes=None):
 		super().__init__(display_name=display_name,id=id)
@@ -72,7 +77,8 @@ class Arrivals(StopPoint):
 				"time_to_station": arrival["timeToStation"],
 				"expected_arrival": datetime.fromisoformat(arrival["expectedArrival"][:-1]),
 				"platform_name": arrival["platformName"],
-				"destination_name": arrival["destinationName"],
+				"destination_name": self.get_common_name(arrival["destinationNaptanId"]),
+				"destination_id": arrival["destinationNaptanId"],
 			}
 			arrivals.append(arrival_info)
 		return arrivals
